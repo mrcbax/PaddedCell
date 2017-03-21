@@ -1,0 +1,8 @@
+[package]
+name = "PaddedCell"
+version = "0.1.0"
+authors = ["LogoiLab <cbaxter@mail.umw.edu>"]
+description = "Nothing here..darn."
+
+[dependencies]
+clap = "*"
