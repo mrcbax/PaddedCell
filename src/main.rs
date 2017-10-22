@@ -39,6 +39,7 @@ fn compute_sha256() {
 }
 
 fn make_safe(file: Bytes<File>) -> String {
+    println!("Encoding sample binary.");
     let mut byte_vec: Vec<u8> = vec!();
     for byte in file {
         byte_vec.push(byte.expect("Invalid byte."));
@@ -49,10 +50,12 @@ fn make_safe(file: Bytes<File>) -> String {
 }
 
 fn make_live(b64: &String) -> Vec<u8> {
+    println!("Decoding sample binary.");
     decode(&b64).expect("Failed to decode binary.")
 }
 
 fn read_bytes(path: &str) -> Bytes<File> {
+    println!("Reading file.");
     let path = Path::new(path);
     let display = path.display();
 
@@ -65,23 +68,23 @@ fn read_bytes(path: &str) -> Bytes<File> {
 }
 
 fn load_db(db: Database) -> Database {
+    println!("Loading database.");
     let path = Path::new("mal_database.toml");
-    let display = path.display();
-
     let mut db_file = match File::open(&path) {
         Err(why) => {
-            File::create("mal_database.toml").expect("Failed to create file.").write(toml::to_string(&db).unwrap().as_bytes());
+            File::create("mal_database.toml").expect("Failed to create file.").write(toml::to_string(&db).expect("Failed to write to file.").as_bytes());
             panic!("Failed to read database. Creating.");
         },
         Ok(file) => file,
     };
     let mut db_strings: String = String::new();
-    db_file.read_to_string(&mut db_strings).unwrap();
+    db_file.read_to_string(&mut db_strings).expect("Failed to read file.");
     toml::from_str(&db_strings.as_str()).expect("Failed to parse database.")
 }
 
 fn save_db(db: Database) {
-    File::open("mal_database.toml").expect("Failed to create file.").write(toml::to_string(&db).unwrap().as_bytes());
+    println!("Saving database.");
+    File::open("mal_database.toml").expect("Failed to create file.").write(toml::to_string(&db).expect("Failed to write to file.").as_bytes());
 }
 
 fn main() {
@@ -89,32 +92,35 @@ fn main() {
     db = load_db(db);
     let matches = App::new(crate_name!()).version(crate_version!()).author(crate_authors!()).about(crate_description!()).arg(Arg::with_name("import").short("i").long("import").value_name("IMPORT_FILE").help("Imports a sample into the database").takes_value(true).required(false)).arg(Arg::with_name("export").short("x").long("export").value_name("EXPORT_FILE").help("Exports the given sample from the database").takes_value(true).required(false)).arg(Arg::with_name("list").short("l").long("list").help("Lists all samples in database").takes_value(false).required(false)).get_matches();
 
-    match matches.occurrences_of("IMPORT_FILE") {
-        0 => (),
-        1 => {
-            let safe_file: String = make_safe(read_bytes(&matches.value_of("IMPORT_FILE").unwrap()));
-            let mut path: &Path = Path::new(matches.value_of("IMPORT_FILE").unwrap());
-            db.samples.push(Sample{filename: String::from(path.file_stem().unwrap().to_str().unwrap()), data: safe_file, md5: String::new(), sha256: String::new()});
-            ()
+    match matches.value_of("IMPORT_FILE") {
+        Some(s) => {
+            println!("Adding sample to database.");
+            let safe_file: String = make_safe(read_bytes(s));
+            let path: &Path = Path::new(s);
+            db.samples.push(Sample{filename: String::from(path.file_stem().expect("Failed to find filename.").to_str().expect("Failed to parse filename.")), data: safe_file, md5: String::new(), sha256: String::new()});
+            db.size = db.size + 1;
+            println!("Sample sucessfully added.");
         },
-        _ => (),
-    }
+        None => (),
+    };
 
-    match matches.occurrences_of("EXPORT_FILE") {
-        0 => (),
-        1 => {
+    match matches.value_of("EXPORT_FILE") {
+        Some(s) => {
+            println!("Exporting from database.");
             let mut live_bytes: Vec<u8> = vec!();
             for sample in &db.samples {
-                if &sample.filename == matches.value_of("EXPORT_FILE").unwrap() {
+                print!(".");
+                if &sample.filename == s {
                     live_bytes = make_live(&sample.data);
                 } else {
-                    println!("Sample not found.")
+                    println!("Sample not found.");
                 }
             }
-            File::create(matches.value_of("EXPORT_FILE").unwrap()).expect("Failed to create file.").write(live_bytes.as_slice());
-            ()
+            File::create(s).expect("Failed to create file.").write(live_bytes.as_slice());
+            println!("Successfully exported sample.");
         },
-        _ => (),
-    }
+        None => (),
+    };
+    
     save_db(db);
 }
