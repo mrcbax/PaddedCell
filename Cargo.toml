@@ -1,8 +1,12 @@
 [package]
-name = "PaddedCell"
+name = "pcell"
 version = "0.1.0"
 authors = ["LogoiLab <cbaxter@mail.umw.edu>"]
 description = "Nothing here..darn."
 
 [dependencies]
+base64 = "*"
 clap = "*"
+serde = "*"
+serde_derive = "*"
+toml = "*"
