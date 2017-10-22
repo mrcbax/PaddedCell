@@ -30,13 +30,13 @@ struct Sample {
     sha256: String,
 }
 
-fn compute_md5() {
-    unimplemented!()
-}
+// fn compute_md5() {
+//     unimplemented!()
+// }
 
-fn compute_sha256() {
-    unimplemented!()
-}
+// fn compute_sha256() {
+//     unimplemented!()
+// }
 
 fn make_safe(file: Bytes<File>) -> String {
     println!("Encoding sample binary.");
@@ -72,7 +72,11 @@ fn load_db(db: Database) -> Database {
     let path = Path::new("mal_database.toml");
     let mut db_file = match File::open(&path) {
         Err(why) => {
-            File::create("mal_database.toml").expect("Failed to create file.").write(toml::to_string(&db).expect("Failed to write to file.").as_bytes());
+            let temp = File::create("mal_database.toml").expect("Failed to create file.").write(toml::to_string(&db).expect("Failed to write to file.").as_bytes());
+            match temp {
+                Ok(o) => println!("Read database successfully: {}", o),
+                Err(e) => println!("Failed to read database: {} {}", why.description(), e.description()),
+            }
             panic!("Failed to read database. Creating.");
         },
         Ok(file) => file,
@@ -84,7 +88,11 @@ fn load_db(db: Database) -> Database {
 
 fn save_db(db: Database) {
     println!("Saving database.");
-    File::open("mal_database.toml").expect("Failed to create file.").write(toml::to_string(&db).expect("Failed to write to file.").as_bytes());
+    let temp = File::open("mal_database.toml").expect("Failed to create file.").write(toml::to_string(&db).expect("Failed to write to file.").as_bytes());
+    match temp {
+        Ok(o) => println!("Saved database successfully: {}", o),
+        Err(e) => println!("Failed to save database: {}", e.description()),
+    }
 }
 
 fn main() {
@@ -94,7 +102,7 @@ fn main() {
 
     match matches.value_of("IMPORT_FILE") {
         Some(s) => {
-            println!("Adding sample to database.");
+            println!("Adding sample to database: {}", s);
             let safe_file: String = make_safe(read_bytes(s));
             let path: &Path = Path::new(s);
             db.samples.push(Sample{filename: String::from(path.file_stem().expect("Failed to find filename.").to_str().expect("Failed to parse filename.")), data: safe_file, md5: String::new(), sha256: String::new()});
@@ -106,7 +114,7 @@ fn main() {
 
     match matches.value_of("EXPORT_FILE") {
         Some(s) => {
-            println!("Exporting from database.");
+            println!("Exporting from database: {}", s);
             let mut live_bytes: Vec<u8> = vec!();
             for sample in &db.samples {
                 print!(".");
@@ -116,11 +124,15 @@ fn main() {
                     println!("Sample not found.");
                 }
             }
-            File::create(s).expect("Failed to create file.").write(live_bytes.as_slice());
+            let temp = File::create(s).expect("Failed to create file.").write(live_bytes.as_slice());
+            match temp {
+                Ok(o) => println!("File created successfully: {}", o),
+                Err(e) => println!("Failed to create file: {}", e.description()),
+            }
             println!("Successfully exported sample.");
         },
         None => (),
     };
-    
+
     save_db(db);
 }
