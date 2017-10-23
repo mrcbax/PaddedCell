@@ -1,4 +1,4 @@
-Padded Cell
+Padded Cell [![Crates.io](https://img.shields.io/crates/v/pcell.svg)](https://crates.io/crates/pcell)
 ===
 Description
 ---
