@@ -24,7 +24,7 @@ FLAGS:
 OPTIONS:
     -x, --export <export>    Exports the given sample from the database
     -i, --import <import>    Imports a sample into the database
-    -l, --list <list>        Lists all samples in database
+    -l, --list <list>        Lists all samples in database or the listing for the filename given.
 ```
 
 Implementation Checklist
