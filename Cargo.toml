@@ -1,6 +1,6 @@
 [package]
 name = "pcell"
-version = "0.7.0"
+version = "0.7.1"
 authors = ["LogoiLab <cbaxter@mail.umw.edu>"]
 description = "A simple malware sample cold storage tool."
 publish = true
