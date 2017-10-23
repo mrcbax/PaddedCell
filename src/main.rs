@@ -115,7 +115,7 @@ fn save_db(db: Database) {
 fn main() {
     let mut db: Database = Database{samples: vec!(), size: 0};
     db = load_db(db);
-    let matches = App::new(crate_name!()).version(crate_version!()).author(crate_authors!()).about(crate_description!()).arg(Arg::with_name("import").short("i").long("import").help("Imports a sample into the database").takes_value(true).required(false)).arg(Arg::with_name("export").short("x").long("export").help("Exports the given sample from the database").takes_value(true).required(false)).arg(Arg::with_name("list").short("l").long("list").help("Lists all samples in database").takes_value(true).required(false)).get_matches();
+    let matches = App::new("Padded Cell").version(crate_version!()).author(crate_authors!()).about(crate_description!()).arg(Arg::with_name("import").short("i").long("import").help("Imports a sample into the database").takes_value(true).required(false)).arg(Arg::with_name("export").short("x").long("export").help("Exports the given sample from the database").takes_value(true).required(false)).arg(Arg::with_name("list").short("l").long("list").help("Lists all samples in database").takes_value(true).required(false)).get_matches();
 
     match matches.value_of("import") {
         Some(s) => {

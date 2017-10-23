@@ -3,7 +3,8 @@ name = "pcell"
 version = "0.1.0"
 authors = ["LogoiLab <cbaxter@mail.umw.edu>"]
 description = "A simple malware sample cold storage tool."
-
+publish = true
+repository = "https://www.github.com/LogoiLab/PaddedCell"
 [dependencies]
 base64 = "*"
 #byte_sha = "*"
