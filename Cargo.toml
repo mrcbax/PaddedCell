@@ -2,10 +2,11 @@
 name = "pcell"
 version = "0.1.0"
 authors = ["LogoiLab <cbaxter@mail.umw.edu>"]
-description = "Nothing here..darn."
+description = "A simple malware sample cold storage tool."
 
 [dependencies]
 base64 = "*"
+#byte_sha = "*"
 clap = "*"
 md5 = "*"
 prettytable-rs = "*"

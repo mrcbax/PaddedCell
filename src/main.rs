@@ -1,4 +1,5 @@
 extern crate base64;
+//extern crate byte_sha;
 #[macro_use]
 extern crate clap;
 extern crate md5;
@@ -36,10 +37,12 @@ struct Sample {
 }
 
 fn compute_md5(bytes: &[u8]) -> String {
+    println!("Computing md5 sum.");
     format!("{:x}", md5::compute(bytes))
 }
 
 // fn compute_sha256() {
+//     println!("Computing sha256 sum");
 //     unimplemented!()
 // }
 
@@ -112,7 +115,7 @@ fn save_db(db: Database) {
 fn main() {
     let mut db: Database = Database{samples: vec!(), size: 0};
     db = load_db(db);
-    let matches = App::new(crate_name!()).version(crate_version!()).author(crate_authors!()).about(crate_description!()).arg(Arg::with_name("import").short("i").long("import").help("Imports a sample into the database").takes_value(true).required(false)).arg(Arg::with_name("export").short("x").long("export").help("Exports the given sample from the database").takes_value(true).required(false)).arg(Arg::with_name("list").short("l").long("list").help("Lists all samples in database").takes_value(false).required(false)).get_matches();
+    let matches = App::new(crate_name!()).version(crate_version!()).author(crate_authors!()).about(crate_description!()).arg(Arg::with_name("import").short("i").long("import").help("Imports a sample into the database").takes_value(true).required(false)).arg(Arg::with_name("export").short("x").long("export").help("Exports the given sample from the database").takes_value(true).required(false)).arg(Arg::with_name("list").short("l").long("list").help("Lists all samples in database").takes_value(true).required(false)).get_matches();
 
     match matches.value_of("import") {
         Some(s) => {
@@ -164,9 +167,9 @@ fn main() {
         Some(s) => {
             let mut table = Table::new();
             table.add_row(row!["Filename", "md5", "sha256"]);
-            for sample in db.samples {
+            for sample in &db.samples {
                 if sample.filename == s {
-                    table.add_row(row![sample.filename.as_str(), sample.md5.as_str(), sample.sha256.as_str()]);
+                    table.add_row(row![&sample.filename.as_str(), &sample.md5.as_str(), &sample.sha256.as_str()]);
                 }
             }
             table.printstd();
